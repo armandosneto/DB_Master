@@ -73,6 +73,7 @@ class DB_Master {
 
     }
 
+
     public function rollback(){
         $this->conn->rollback();
     }
