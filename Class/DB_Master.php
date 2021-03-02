@@ -1,6 +1,6 @@
 <?php
 
-class DB_Master {
+class DB_Master{
 
     private $type;
     private $dbname;
@@ -9,7 +9,7 @@ class DB_Master {
     private $password;
     private $conn;
 
-    public function config($type, $dbname, $username, $password, $host = "localhost", $transaction=false){
+    public function __construct($type, $dbname, $username, $password, $host = "localhost", $transaction = false){
 
         $this->type = $type;
         $this->dbname = $dbname;
@@ -19,58 +19,46 @@ class DB_Master {
 
         $this->conn = $this->connection();
 
-        if($transaction){
+        if ($transaction) {
             $this->conn->beginTransaction();
         }
-
     }
 
     private function connection(){
         //acessing PDO according to the correct DB type
-        switch($this->type){
+        switch ($this->type) {
 
             case "pgsql":
                 $dsn = $this->type . ":host=" . $this->host . ";dbname=" . $this->dbname . ";user=" . $this->username . ";password=" . $this->password;
-                 return new PDO($dsn);
+                return new PDO($dsn);
                 break;
             case "mysql":
-                $dsn = $this->type . ":host=" . $this->host . ";dbname=" . $this->dbname; 
-                 return new PDO($dsn, $this->username, $this->password);
+                $dsn = $this->type . ":host=" . $this->host . ";dbname=" . $this->dbname;
+                return new PDO($dsn, $this->username, $this->password);
                 break;
             default:
                 throw new Exception("DB Master doesn't works with this Database");
                 break;
-
         }
-    
     }
-    
-    public function action($query , array $values = array()){
+
+    public function action($query, array $values = array()){
 
         $stmt = $this->conn->prepare($query);
         $queryL = strtolower($query);
-       
+
+        foreach ($values as $key => $value) {
+            $stmt->bindParam($key, $value);
+        }
+
+        $stmt->execute();
         //select resquests treatment
-        if(str_starts_with($queryL, 'select')){
-    
+        if (str_starts_with($queryL, 'select')) {
+
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return json_encode($results);
-    
+            return $results;
         }
-        //select, update and detete requests treatment
-        elseif(str_starts_with($queryL, 'insert into') || str_starts_with($queryL, 'update') || str_starts_with($queryL, 'delete')){
-    
-            $keys = array_keys($values);
-
-            foreach($keys as $key){
-                $stmt->bindParam($key, $values[$key]);
-            }
-
-            $stmt->execute();
-    
-        }
-
     }
 
 
@@ -80,6 +68,4 @@ class DB_Master {
     public function commit(){
         $this->conn->commit();
     }
-
-
 }
