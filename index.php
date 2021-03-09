@@ -36,3 +36,11 @@ require_once("config.php");
 //$user = new User("Breno", "12131415");
 //$user->insert();
 //echo $user;
+
+
+
+//Update a user into the database
+
+$user = new user();
+$user->loadById(10);
+$user->update("Armandinho", "test");

@@ -108,6 +108,22 @@ class User {
 
     }
 
+    public function update($login, $password){
+
+        $this->setDeslogin($login);
+        $this->setDessenha($password);
+
+        $sql = new DB_Master("mysql","dbphp8","root","","localhost", true);
+
+        $sql->action("UPDATE tb_usuarios SET deslogin = :LOGIN, dessenha = :PASSWORD WHERE idusuario = :ID", array(
+            ":LOGIN"=> $this->getDeslogin(),
+            ":PASSWORD" => $this->getDessenha(),
+            ":ID" => $this->getIdusuario()
+        ));
+
+        $sql->commit();
+    }
+
     public function __toString(){
         return json_encode(array(
             "idusuario" => $this->getIdusuario(),

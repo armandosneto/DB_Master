@@ -41,7 +41,7 @@ class DB_Master{
         }
     }
 
-    public function action($query, array $values = array()):array{
+    public function action($query, array $values = array()){
 
         $stmt = $this->conn->prepare($query);
         $queryL = strtoupper($query);
