@@ -16,7 +16,6 @@ class DB_Master{
         $this->host = $host;
         $this->username = $username;
         $this->password = $password;
-
         $this->conn = $this->connection();
 
         if ($transaction) {
@@ -42,25 +41,32 @@ class DB_Master{
         }
     }
 
-    public function action($query, array $values = array()){
+    public function action($query, array $values = array()):array{
 
         $stmt = $this->conn->prepare($query);
-        $queryL = strtolower($query);
+        $queryL = strtoupper($query);
+        
 
         foreach ($values as $key => $value) {
-            $stmt->bindParam($key, $value);
+
+            $this->setParam($stmt,$key, $value);
+
         }
 
         $stmt->execute();
+        
         //select resquests treatment
-        if (str_starts_with($queryL, 'select')) {
+        if (str_starts_with($queryL, 'SELECT') || str_starts_with($queryL, 'CALL')) {
 
-            $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return $results;
         }
+
     }
 
+    private function setParam($statement, $key, $value){
+        $statement->bindParam($key, $value);
+    }
 
     public function rollback(){
         $this->conn->rollback();
