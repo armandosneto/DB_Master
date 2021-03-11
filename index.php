@@ -31,7 +31,7 @@ require_once("config.php");
 
 
 
-//Insert a user into the database
+//Insert a user from the database
 
 //$user = new User("Breno", "12131415");
 //$user->insert();
@@ -39,8 +39,16 @@ require_once("config.php");
 
 
 
-//Update a user into the database
+//Update a user from the database
 
+//$user = new user();
+//$user->loadById(10);
+//$user->update("Armandinho", "test");
+
+
+//Delete a user from the database
 $user = new user();
-$user->loadById(10);
-$user->update("Armandinho", "test");
+$user->loadById(12);
+$user->Delete();
+
+echo $user->getDeslogin();

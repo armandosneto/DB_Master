@@ -124,6 +124,23 @@ class User {
         $sql->commit();
     }
 
+    public function delete(){
+
+        $sql = new DB_Master("mysql","dbphp8","root","","localhost", true);
+        $sql->action("DELETE FROM tb_usuarios WHERE idusuario = :ID", array(
+            ':ID'=> $this->getIdusuario()
+        )); 
+
+        $sql->commit();
+
+        $this->setIdusuario(0);
+        $this->setDeslogin("");
+        $this->setDessenha("");
+        $this->setDtcadastro(new DateTime());
+
+    }
+
+
     public function __toString(){
         return json_encode(array(
             "idusuario" => $this->getIdusuario(),
